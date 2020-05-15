@@ -569,7 +569,7 @@ bool rpc::solveTriOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCPs
         MatOp::MatrixMulti(Mt, Rtmp, MtR, 39, 1, size);
         double tmp[39*39]; memcpy(tmp, MtM, sizeof(double)*39*39);
         double tmp2[39*39];
-        MatOp::WriteMat(MtM, 39,39);
+        // MatOp::WriteMat(MtM, 39,39);
         for(int i=0;i<39*39;++i)
         {fun_truc(MtM[i],8);}
         // cout<<"input lambda"<<endl;
@@ -578,7 +578,7 @@ bool rpc::solveTriOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCPs
         // {MtM[i]+=lambda;}
         inverse_Eigen(MtM, iMtM, 39);
         MatOp::MatrixMulti(iMtM, MtM, tmp2, 39,39,39);// validation
-        MatOp::WriteMat(tmp2,39,39);
+        // MatOp::WriteMat(tmp2,39,39);
         MatOp::MatrixMulti(iMtM, MtR, J, 39,1,39);
         MatOp::Subtraction(Jtmp, J, Jtmp, 39);
         int flag=0;
@@ -718,7 +718,7 @@ bool rpc::solveDualOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCP
         MatOp::MatrixMulti(Mt, Rtmp, MtR, 19, 1, size);
         double tmp[19*19]; memcpy(tmp, MtM, sizeof(double)*19*19);
         double tmp2[19*19];
-        MatOp::WriteMat(MtM, 19,19);
+        // MatOp::WriteMat(MtM, 19,19);
         inverse_Eigen(MtM, iMtM, 19);
         // mat_inv(MtM, iMtM);
         MatOp::MatrixMulti(iMtM, MtM, tmp2, 19,19,19);// validation

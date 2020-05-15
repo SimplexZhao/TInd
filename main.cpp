@@ -16,7 +16,7 @@ bool getDEMGridMN(GDALRasterBand * pRaster, double adfGeoTransform[6], mPoint3d 
 
 int main(int argc, char** argv)
 {
-	string dirname="C:/ZY3/new/";// data directory
+	string dirname="./data";// data directory
 	int M=10; int N=20; int layers=6;// Control grid size MxN and Height layer number layers
 	if(argc==5)
 	{
@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 		layers=stoi(argv[4]);
 	}
 	GDALAllRegister();
-	GDALDataset *pImg = (GDALDataset*)GDALOpen((dirname+string("zy3.tif")).data(), GA_ReadOnly);
+	GDALDataset *pImg = (GDALDataset*)GDALOpen((dirname+string("zy3.jpg")).data(), GA_ReadOnly);
 	if(pImg==NULL)return -1;
 	int img_w=pImg->GetRasterXSize();
 	int img_h=pImg->GetRasterYSize();
