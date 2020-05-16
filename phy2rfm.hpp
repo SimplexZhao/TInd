@@ -406,10 +406,10 @@ void inverse_Eigen(double* MtM, double* iMtM, int size)
     else if(size==39)
     {
         Matrix<double,39,39> eMtM;    double* peMtM=eMtM.data();
-        for(int i=0;i<size*size;++i)peMtM[i]=MtM[i]*10;
+        for(int i=0;i<size*size;++i)peMtM[i]=MtM[i];
         Matrix<double,39,39> eiMtM=eMtM.inverse();
         double* peiMtM=eiMtM.data();
-        for(int i=0;i<size*size;++i)iMtM[i]=peiMtM[i]*10;
+        for(int i=0;i<size*size;++i)iMtM[i]=peiMtM[i];
     }
     else return;
 }
@@ -550,7 +550,7 @@ bool rpc::solveTriOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCPs
     }
     double* Mtmp=new double[39*size];
     double* Rtmp=new double[size];
-    for(int i=0;i<1;++i)// maximum iteration: 10
+    for(int i=0;i<10;++i)// maximum iteration: 10
     {
         idM=0;
         for(int j=0;j<size;++j)
@@ -570,15 +570,23 @@ bool rpc::solveTriOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCPs
         double tmp[39*39]; memcpy(tmp, MtM, sizeof(double)*39*39);
         double tmp2[39*39];
         // MatOp::WriteMat(MtM, 39,39);
-        for(int i=0;i<39*39;++i)
-        {fun_truc(MtM[i],8);}
-        // cout<<"input lambda"<<endl;
-        // double lambda; cin>>lambda;
-        // for(int i=0;i<39*39;i+=40)
-        // {MtM[i]+=lambda;}
+        // for(int i=0;i<39*39;++i)
+        // {fun_truc(MtM[i],8);}
+        // Ridge Regression
+        double k; 
+        Matrix<double,39,39> eMtM;    double* peMtM=eMtM.data();
+        for(int i=0;i<39*39;++i)peMtM[i]=MtM[i];
+        MatrixXd eigenvalues=eMtM.eigenvalues().real();
+        double minimum=eigenvalues.minCoeff();
+        double maximum=eigenvalues.maxCoeff();
+        k=(maximum-1e11*minimum)/(1e11-1.);
+        for(int il=0;il<39*39;il+=40)
+        {MtM[il]+=k;}
+        // Ridge Regression
+
         inverse_Eigen(MtM, iMtM, 39);
         MatOp::MatrixMulti(iMtM, MtM, tmp2, 39,39,39);// validation
-        // MatOp::WriteMat(tmp2,39,39);
+        MatOp::WriteMat(tmp2,39,39);
         MatOp::MatrixMulti(iMtM, MtR, J, 39,1,39);
         MatOp::Subtraction(Jtmp, J, Jtmp, 39);
         int flag=0;
@@ -625,7 +633,7 @@ bool rpc::solveTriOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCPs
         }
     }
     double* Ctmp=new double[size];
-    for(int i=0;i<1;++i)// maximum iteration: 10
+    for(int i=0;i<10;++i)// maximum iteration: 10
     {
         idM=0;
         for(int j=0;j<size;++j)
@@ -642,8 +650,19 @@ bool rpc::solveTriOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCPs
         double MtC[39];
         MatOp::MatrixMulti(Mt, Mtmp, MtM, 39, 39, size);
         MatOp::MatrixMulti(Mt, Ctmp, MtC, 39, 1, size);
-        for(int i=0;i<39*39;++i)
-        {fun_truc(MtM[i],8);}
+        // for(int i=0;i<39*39;++i)
+        // {fun_truc(MtM[i],8);}
+        // Ridge Regression
+        double k; 
+        Matrix<double,39,39> eMtM;    double* peMtM=eMtM.data();
+        for(int i=0;i<39*39;++i)peMtM[i]=MtM[i];
+        MatrixXd eigenvalues=eMtM.eigenvalues().real();
+        double minimum=eigenvalues.minCoeff();
+        double maximum=eigenvalues.maxCoeff();
+        k=(maximum-1e11*minimum)/(1e11-1.);
+        for(int il=0;il<39*39;il+=40)
+        {MtM[il]+=k;}
+        // Ridge Regression
         inverse_Eigen(MtM, iMtM, 39);
         MatOp::MatrixMulti(iMtM, MtC, K, 39,1,39);
         int flag=0;
@@ -699,7 +718,7 @@ bool rpc::solveDualOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCP
     }
     double* Mtmp=new double[19*size];
     double* Rtmp=new double[size];
-    for(int i=0;i<1;++i)// maximum iteration: 10
+    for(int i=0;i<10;++i)// maximum iteration: 10
     {
         idM=0;
         for(int j=0;j<size;++j)
@@ -719,6 +738,17 @@ bool rpc::solveDualOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCP
         double tmp[19*19]; memcpy(tmp, MtM, sizeof(double)*19*19);
         double tmp2[19*19];
         // MatOp::WriteMat(MtM, 19,19);
+        // Ridge Regression
+        double k; 
+        Matrix<double,19,19> eMtM;    double* peMtM=eMtM.data();
+        for(int i=0;i<19*19;++i)peMtM[i]=MtM[i];
+        MatrixXd eigenvalues=eMtM.eigenvalues().real();
+        double minimum=eigenvalues.minCoeff();
+        double maximum=eigenvalues.maxCoeff();
+        k=(maximum-1e11*minimum)/(1e11-1.);
+        for(int il=0;il<19*19;il+=20)
+        {MtM[il]+=k;}
+        // Ridge Regression
         inverse_Eigen(MtM, iMtM, 19);
         // mat_inv(MtM, iMtM);
         MatOp::MatrixMulti(iMtM, MtM, tmp2, 19,19,19);// validation
@@ -765,7 +795,7 @@ bool rpc::solveDualOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCP
         }
     }
     double* Ctmp=new double[size];
-    for(int i=0;i<1;++i)// maximum iteration: 10
+    for(int i=0;i<10;++i)// maximum iteration: 10
     {
         idM=0;
         for(int j=0;j<size;++j)
@@ -782,7 +812,17 @@ bool rpc::solveDualOrderParameters(vector<mPoint2d> ImgPts, vector<mPoint3d> VCP
         double MtC[19];
         MatOp::MatrixMulti(Mt, Mtmp, MtM, 19, 19, size);
         MatOp::MatrixMulti(Mt, Ctmp, MtC, 19, 1, size);
-
+        // Ridge Regression
+        double k; 
+        Matrix<double,19,19> eMtM;    double* peMtM=eMtM.data();
+        for(int i=0;i<19*19;++i)peMtM[i]=MtM[i];
+        MatrixXd eigenvalues=eMtM.eigenvalues().real();
+        double minimum=eigenvalues.minCoeff();
+        double maximum=eigenvalues.maxCoeff();
+        k=(maximum-1e11*minimum)/(1e11-1.);
+        for(int il=0;il<19*19;il+=20)
+        {MtM[il]+=k;}
+        // Ridge Regression
         inverse_Eigen(MtM, iMtM, 19);
         MatOp::MatrixMulti(iMtM, MtC, K, 19,1,19);
         int flag=0;

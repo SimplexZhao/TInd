@@ -17,6 +17,7 @@ bool getDEMGridMN(GDALRasterBand * pRaster, double adfGeoTransform[6], mPoint3d 
 int main(int argc, char** argv)
 {
 	string dirname="./data";// data directory
+	if(dirname[dirname.length()-1]!='/')dirname+="/";
 	int M=10; int N=20; int layers=6;// Control grid size MxN and Height layer number layers
 	if(argc==5)
 	{
